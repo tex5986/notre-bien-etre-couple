@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre Journée Bien-Être 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #333;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .sync-info {
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .sync-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .sync-online {
+            background: #00b894;
+            color: white;
+        }
+        
+        .sync-offline {
+            background: #fd79a8;
+            color: white;
+        }
+        
+        .share-link {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 2px dashed #667eea;
+        }
+        
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px;
+        }
+        
+        .quote {
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        
+        .person-section {
+            padding: 30px;
+        }
+        
+        .person-section:first-child {
+            border-right: 3px solid #f1f2f6;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+        }
+        
+        .person-section:last-child {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        }
+        
+        .person-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #4a4a4a;
+        }
+        
+        .score-display {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .score-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b9d;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.6);
+            height: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #4ecdc4);
+            border-radius: 10px;
+            transition: all 0.5s ease;
+        }
+        
+        .milestone {
+            background: #ffd700;
+            color: #333;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .milestone.achieved {
+            background: #00b894;
+            color: white;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255,255,255,0.7);
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: #ff6b9d;
+            outline: none;
+        }
+        
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .category {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .category input {
+            width: 50px;
+            margin-left: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .history {
+            background: rgba(255,255,255,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            background: rgba(255,255,255,0.8);
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid #ff6b9d;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00b894;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(300px); }
+            to { transform: translateX(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .person-section:first-child {
+                border-right: none;
+                border-bottom: 3px solid #f1f2f6;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .category {
+                font-size: 0.8em;
+                padding: 12px 8px;
+                justify-content: space-between;
+            }
+            
+            .category input {
+                width: 45px;
+                margin-left: 5px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notre Journée Bien-Être 💕</h1>
+            
+            <div class="sync-info">
+                <div class="sync-status" id="syncStatus">🔄 Synchronisation...</div>
+                <div style="font-size: 13px; margin-bottom: 10px;">
+                    <strong>🔗 Lien de partage automatique :</strong><br>
+                    <small>Copiez ce lien et envoyez-le à votre partenaire pour synchroniser vos données !</small>
+                </div>
+                <div class="share-link" id="shareLink">Génération du lien...</div>
+                <button class="copy-btn" onclick="copyLink()">📋 Copier le lien</button>
+                <button class="copy-btn" onclick="exportData()">📤 Exporter données</button>
+                <button class="copy-btn" onclick="importData()">📥 Importer données</button>
+            </div>
+            
+            <div class="quote" id="quote">
+                "Chaque petit pas compte. Vous êtes plus forts ensemble ! 💪✨"
+            </div>
+            
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div>Jours de suivi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="loss1">0kg</div>
+                    <div>Mon Amour 🧩🫶</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="loss2">0kg</div>
+                    <div>Mi Amor 🫶🧩</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bestScore">0</div>
+                    <div>Meilleur score</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Section Mon Amour -->
+            <div class="person-section">
+                <h2 class="person-title">Mon Amour 🧩🫶</h2>
+                
+                <div class="score-display">
+                    <div class="score-number" id="score1">0</div>
+                    <div>points bien-être</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress1" style="width: 0%"></div>
+                    </div>
+                    <div>Perte: <span id="weightLoss1">0</span> kg / 10 kg</div>
+                </div>
+                
+                <div class="milestone" id="milestone1_25">🎯 Objectif 2.5kg</div>
+                <div class="milestone" id="milestone1_50">🎯 Objectif 5kg</div>
+                <div class="milestone" id="milestone1_75">🎯 Objectif 7.5kg</div>
+                <div class="milestone" id="milestone1_100">🏆 Objectif 10kg</div>
+                
+                <div class="input-group">
+                    <label>💗 Mon poids aujourd'hui (kg)</label>
+                    <input type="number" id="weight1" step="0.1" placeholder="Ex: 85.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de ventre (cm) - optionnel</label>
+                    <input type="number" id="waist1" step="0.1" placeholder="Ex: 95">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de taille (cm) - optionnel</label>
+                    <input type="number" id="waistline1" step="0.1" placeholder="Ex: 90">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de cuisse (cm) - optionnel</label>
+                    <input type="number" id="thigh1" step="0.1" placeholder="Ex: 65">
+                </div>
+                
+                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
+                    <label>📸 Photo bien-être (tous les lundis matins)</label>
+                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fier !</small><br>
+                    <button type="button" onclick="takePhoto(1)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
+                </div>
+                
+                <div class="categories">
+                    <div class="category">
+                        🍻 Alcool (verres) <input type="number" id="alcohol1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🥨 Apéritif (intensité) <input type="number" id="appetizer1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🍰 Sucre (intensité) <input type="number" id="sugar1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🍫 Dessert (intensité) <input type="number" id="dessert1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🥗 Légumes (portions) <input type="number" id="vegetables1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🏃 Sport (intensité) <input type="number" id="sport1" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        😴 Sommeil (heures) <input type="number" id="sleep1" min="0" max="15" step="0.5" value="0">
+                    </div>
+                    <div class="category">
+                        🌙 Qualité sommeil <input type="number" id="sleepQuality1" min="1" max="10" value="5">
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
+                    <strong>📖 Guide :</strong><br>
+                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
+                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
+                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
+                </div>
+                
+                <div class="input-group">
+                    <label>👟 Mes pas aujourd'hui</label>
+                    <input type="number" id="steps1" placeholder="Ex: 8500">
+                </div>
+                
+                <div class="input-group">
+                    <label>💭 Comment je me sens</label>
+                    <textarea id="comment1" rows="2" placeholder="Ma journée..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveData(1)">💾 Sauvegarder</button>
+                
+                <div class="history" id="history1"></div>
+            </div>
+            
+            <!-- Section Mi Amor -->
+            <div class="person-section">
+                <h2 class="person-title">Mi Amor 🫶🧩</h2>
+                
+                <div class="score-display">
+                    <div class="score-number" id="score2">0</div>
+                    <div>points bien-être</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress2" style="width: 0%"></div>
+                    </div>
+                    <div>Perte: <span id="weightLoss2">0</span> kg / 10 kg</div>
+                </div>
+                
+                <div class="milestone" id="milestone2_25">🎯 Objectif 2.5kg</div>
+                <div class="milestone" id="milestone2_50">🎯 Objectif 5kg</div>
+                <div class="milestone" id="milestone2_75">🎯 Objectif 7.5kg</div>
+                <div class="milestone" id="milestone2_100">🏆 Objectif 10kg</div>
+                
+                <div class="input-group">
+                    <label>💗 Mon poids aujourd'hui (kg)</label>
+                    <input type="number" id="weight2" step="0.1" placeholder="Ex: 65.2">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de ventre (cm) - optionnel</label>
+                    <input type="number" id="waist2" step="0.1" placeholder="Ex: 75">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de taille (cm) - optionnel</label>
+                    <input type="number" id="waistline2" step="0.1" placeholder="Ex: 70">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de cuisse (cm) - optionnel</label>
+                    <input type="number" id="thigh2" step="0.1" placeholder="Ex: 60">
+                </div>
+                
+                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
+                    <label>📸 Photo bien-être (tous les lundis matins)</label>
+                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fière !</small><br>
+                    <button type="button" onclick="takePhoto(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
+                </div>
+                
+                <div class="categories">
+                    <div class="category">
+                        🍻 Alcool (verres) <input type="number" id="alcohol2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🥨 Apéritif (intensité) <input type="number" id="appetizer2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🍰 Sucre (intensité) <input type="number" id="sugar2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🍫 Dessert (intensité) <input type="number" id="dessert2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🥗 Légumes (portions) <input type="number" id="vegetables2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        🏃 Sport (intensité) <input type="number" id="sport2" min="0" max="10" value="0">
+                    </div>
+                    <div class="category">
+                        😴 Sommeil (heures) <input type="number" id="sleep2" min="0" max="15" step="0.5" value="0">
+                    </div>
+                    <div class="category">
+                        🌙 Qualité sommeil <input type="number" id="sleepQuality2" min="1" max="10" value="5">
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
+                    <strong>📖 Guide :</strong><br>
+                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
+                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
+                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
+                </div>
+                
+                <div class="input-group">
+                    <label>👟 Mes pas aujourd'hui</label>
+                    <input type="number" id="steps2" placeholder="Ex: 7500">
+                </div>
+                
+                <div class="input-group">
+                    <label>💭 Comment je me sens</label>
+                    <textarea id="comment2" rows="2" placeholder="Ma journée..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveData(2)">💾 Sauvegarder</button>
+                
+                <div class="history" id="history2"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Données globales avec synchronisation
+        let data = {
+            person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+            person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+            startDate: new Date().toISOString().split('T')[0],
+            lastSync: Date.now(),
+            challengeId: null
+        };
+        
+        let syncInterval = null;
+        
+        // Citations inspirantes
+        const quotes = [
+            "Chaque petit pas compte. Vous êtes plus forts ensemble ! 💪✨",
+            "La beauté commence quand vous décidez d'être vous-mêmes. 🌸",
+            "Votre corps est capable de choses extraordinaires ! 💎",
+            "Chaque jour est une nouvelle chance de prendre soin de vous. 🌟",
+            "Ensemble, vous retrouvez votre force ! ⚡",
+            "Soyez fiers de chaque effort, même le plus petit. 🌈",
+            "Votre bien-être est un investissement pour votre couple. 💝"
+        ];
+        
+        // Génération ID unique
+        function generateChallengeId() {
+            return 'challenge_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+        
+        // Obtenir/créer ID challenge
+        function getChallengeId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let id = urlParams.get('id');
+            
+            if (!id) {
+                id = generateChallengeId();
+                data.challengeId = id;
+                updateUrl();
+            } else {
+                data.challengeId = id;
+            }
+            
+            return id;
+        }
+        
+        // Mise à jour URL
+        function updateUrl() {
+            const url = new URL(window.location);
+            url.searchParams.set('id', data.challengeId);
+            url.searchParams.set('data', encodeData(data));
+            url.searchParams.set('sync', Date.now());
+            
+            window.history.replaceState({}, '', url.toString());
+            updateShareLink();
+        }
+        
+        // Mise à jour lien partage
+        function updateShareLink() {
+            const currentUrl = window.location.href;
+            document.getElementById('shareLink').textContent = currentUrl;
+        }
+        
+        // Encodage/décodage données
+        function encodeData(data) {
+            return btoa(encodeURIComponent(JSON.stringify(data)));
+        }
+        
+        function decodeData(encoded) {
+            try {
+                return JSON.parse(decodeURIComponent(atob(encoded)));
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // Chargement depuis URL
+        function loadFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            const syncTime = parseInt(urlParams.get('sync')) || 0;
+            
+            if (encodedData && syncTime > data.lastSync) {
+                const urlData = decodeData(encodedData);
+                if (urlData && urlData.lastSync > data.lastSync) {
+                    data = { ...urlData, lastSync: syncTime };
+                    showNotification('🔄 Données synchronisées !');
+                    updateDisplay();
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Chargement données
+        function loadData() {
+            const challengeId = getChallengeId();
+            
+            // Essayer de charger depuis l'URL
+            const loadedFromUrl = loadFromUrl();
+            
+            if (!loadedFromUrl) {
+                // Charger depuis localStorage
+                const saved = localStorage.getItem('coupleWellnessData_' + challengeId);
+                if (saved) {
+                    const localData = JSON.parse(saved);
+                    if (localData.lastSync > data.lastSync) {
+                        data = localData;
+                    }
+                }
+            }
+            
+            updateDisplay();
+            updateQuote();
+            updateShareLink();
+            updateSyncStatus();
+        }
+        
+        // Sauvegarde
+        function saveToStorage() {
+            localStorage.setItem('coupleWellnessData_' + data.challengeId, JSON.stringify(data));
+        }
+        
+        // Calcul score - Harmonisé avec sommeil
+        function calculateScore(person, values) {
+            let score = 10; // Base
+            
+            // Pénalités (identiques pour tous les deux)
+            score -= values.alcohol * 3;
+            score -= values.appetizer * 2;
+            score -= values.sugar * 2;
+            score -= values.dessert * 2;
+            
+            // Bonus (identiques pour tous les deux)
+            score += values.vegetables * 4;
+            score += values.sport * 6;
+            if (values.steps) score += Math.min(Math.floor(values.steps / 1000), 8);
+            
+            // Bonus sommeil (très important pour le bien-être)
+            if (values.sleep >= 7 && values.sleep <= 9) score += 8; // Sommeil optimal
+            else if (values.sleep >= 6 && values.sleep <= 10) score += 4; // Sommeil correct
+            else if (values.sleep > 0) score += 1; // Au moins tu as dormi
+            
+            // Bonus qualité sommeil
+            if (values.sleepQuality >= 8) score += 6; // Excellent sommeil
+            else if (values.sleepQuality >= 6) score += 3; // Bon sommeil
+            else if (values.sleepQuality >= 4) score += 1; // Sommeil moyen
+            
+            // Bonus spéciaux encourageants
+            if (values.vegetables >= 3) score += 5; // Bonus légumes
+            if (values.sport >= 1) score += 5; // Bonus mouvement
+            if (values.alcohol === 0 && values.sugar === 0 && values.dessert === 0) score += 10; // Bonus résistance totale
+            if (values.sleep >= 7 && values.sleepQuality >= 7) score += 5; // Bonus sommeil parfait
+            
+            return Math.max(5, score); // Score minimum généreux
+        }
+        
+        // Sauvegarde données quotidiennes
+        function saveData(person) {
+            const weight = parseFloat(document.getElementById(`weight${person}`).value);
+            
+            if (!weight || weight <= 0) {
+                showNotification('Merci de saisir un poids valide ! 💗');
+                return;
+            }
+            
+            if (!data[`person${person}`].startWeight) {
+                data[`person${person}`].startWeight = weight;
+            }
+            
+            data[`person${person}`].currentWeight = weight;
+            
+            // Récupérer valeurs - IDENTIQUES pour tous les deux + SOMMEIL
+            let values = {};
+            if (person === 1) {
+                values = {
+                    alcohol: parseInt(document.getElementById('alcohol1').value) || 0,
+                    appetizer: parseInt(document.getElementById('appetizer1').value) || 0,
+                    sugar: parseInt(document.getElementById('sugar1').value) || 0,
+                    dessert: parseInt(document.getElementById('dessert1').value) || 0,
+                    vegetables: parseInt(document.getElementById('vegetables1').value) || 0,
+                    sport: parseInt(document.getElementById('sport1').value) || 0,
+                    sleep: parseFloat(document.getElementById('sleep1').value) || 0,
+                    sleepQuality: parseInt(document.getElementById('sleepQuality1').value) || 5,
+                    steps: parseInt(document.getElementById('steps1').value) || 0,
+                    waist: parseFloat(document.getElementById('waist1').value) || null,
+                    waistline: parseFloat(document.getElementById('waistline1').value) || null,
+                    thigh: parseFloat(document.getElementById('thigh1').value) || null,
+                    comment: document.getElementById('comment1').value || ''
+                };
+            } else {
+                values = {
+                    alcohol: parseInt(document.getElementById('alcohol2').value) || 0,
+                    appetizer: parseInt(document.getElementById('appetizer2').value) || 0,
+                    sugar: parseInt(document.getElementById('sugar2').value) || 0,
+                    dessert: parseInt(document.getElementById('dessert2').value) || 0,
+                    vegetables: parseInt(document.getElementById('vegetables2').value) || 0,
+                    sport: parseInt(document.getElementById('sport2').value) || 0,
+                    sleep: parseFloat(document.getElementById('sleep2').value) || 0,
+                    sleepQuality: parseInt(document.getElementById('sleepQuality2').value) || 5,
+                    steps: parseInt(document.getElementById('steps2').value) || 0,
+                    waist: parseFloat(document.getElementById('waist2').value) || null,
+                    waistline: parseFloat(document.getElementById('waistline2').value) || null,
+                    thigh: parseFloat(document.getElementById('thigh2').value) || null,
+                    comment: document.getElementById('comment2').value || ''
+                };
+            }
+            
+            const dailyScore = calculateScore(person, values);
+            
+            // Ajouter à l'historique
+            const today = new Date().toISOString().split('T')[0];
+            const existingIndex = data[`person${person}`].history.findIndex(h => h.date === today);
+            
+            const entry = {
+                date: today,
+                weight: weight,
+                score: dailyScore,
+                values: values
+            };
+            
+            if (existingIndex >= 0) {
+                data[`person${person}`].history[existingIndex] = entry;
+            } else {
+                data[`person${person}`].history.push(entry);
+            }
+            
+            // Recalculer score total
+            data[`person${person}`].totalScore = data[`person${person}`].history.reduce((sum, h) => sum + h.score, 0);
+            
+            // Mise à jour timestamp
+            data.lastSync = Date.now();
+            
+            // Sauvegarder
+            saveToStorage();
+            updateUrl();
+            updateDisplay();
+            updateMilestones(person);
+            
+            // Messages encouragement
+            if (person === 2) {
+                if (dailyScore >= 20) {
+                    showNotification('🌟 Incroyable journée ! Tu rayonnes ! ✨');
+                } else if (dailyScore >= 15) {
+                    showNotification('💖 Belle journée ! Continue comme ça !');
+                } else {
+                    showNotification('💕 Chaque effort compte ! Tu es formidable !');
+                }
+            } else {
+                if (dailyScore >= 20) {
+                    showNotification('💪 Excellent travail ! Tu assures !');
+                } else {
+                    showNotification('👍 Bien joué ! Continue sur cette lancée !');
+                }
+            }
+            
+            resetForm(person);
+        }
+        
+        // Reset formulaire - IDENTIQUE pour tous les deux + sommeil
+        function resetForm(person) {
+            document.getElementById(`weight${person}`).value = '';
+            document.getElementById(`waist${person}`).value = '';
+            document.getElementById(`waistline${person}`).value = '';
+            document.getElementById(`thigh${person}`).value = '';
+            document.getElementById(`steps${person}`).value = '';
+            document.getElementById(`comment${person}`).value = '';
+            
+            // Reset des catégories identiques
+            document.getElementById(`alcohol${person}`).value = '0';
+            document.getElementById(`appetizer${person}`).value = '0';
+            document.getElementById(`sugar${person}`).value = '0';
+            document.getElementById(`dessert${person}`).value = '0';
+            document.getElementById(`vegetables${person}`).value = '0';
+            document.getElementById(`sport${person}`).value = '0';
+            document.getElementById(`sleep${person}`).value = '0';
+            document.getElementById(`sleepQuality${person}`).value = '5';
+        }
+        
+        // Mise à jour affichage
+        function updateDisplay() {
+            for (let i = 1; i <= 2; i++) {
+                const person = data[`person${i}`];
+                const weightLoss = person.startWeight && person.currentWeight ? 
+                    Math.max(0, person.startWeight - person.currentWeight) : 0;
+                const progress = Math.min(100, (weightLoss / 10) * 100);
+                
+                document.getElementById(`score${i}`).textContent = person.totalScore;
+                document.getElementById(`weightLoss${i}`).textContent = weightLoss.toFixed(1);
+                document.getElementById(`progress${i}`).style.width = progress + '%';
+                
+                // Historique COMPLET avec catégories identiques + sommeil
+                const historyDiv = document.getElementById(`history${i}`);
+                historyDiv.innerHTML = person.history.slice().reverse().map(h => {
+                    const date = new Date(h.date).toLocaleDateString('fr-FR');
+                    
+                    // Affichage identique pour tous les deux + sommeil
+                    const dataDetails = `🍻 ${h.values.alcohol || 0} alcool | 🥨 ${h.values.appetizer || 0} apéritif | 🍰 ${h.values.sugar || 0} sucre | 🍫 ${h.values.dessert || 0} dessert | 🥗 ${h.values.vegetables || 0} légumes | 🏃 ${h.values.sport || 0} sport | 😴 ${h.values.sleep || 0}h | 🌙 ${h.values.sleepQuality || 0}/10`;
+                    
+                    // Mesures corporelles
+                    let measurements = '';
+                    if (h.values.waist) measurements += ` | 📏 Ventre: ${h.values.waist}cm`;
+                    if (h.values.waistline) measurements += ` | Taille: ${h.values.waistline}cm`;
+                    if (h.values.thigh) measurements += ` | Cuisse: ${h.values.thigh}cm`;
+                    if (h.values.steps) measurements += ` | 👟 ${h.values.steps} pas`;
+                    
+                    // Commentaire
+                    let commentText = h.values.comment ? `<br><em style="color: #555; font-style: italic;">"${h.values.comment}"</em>` : '';
+                    
+                    return `<div class="history-item">
+                        <strong style="color: #333;">${date}</strong><br>
+                        <strong>Poids:</strong> ${h.weight}kg | <strong>Score:</strong> ${h.score} points<br>
+                        <span style="font-size: 0.85em; color: #666;">${dataDetails}</span>
+                        ${measurements ? `<br><span style="font-size: 0.8em; color: #888;">${measurements}</span>` : ''}
+                        ${commentText}
+                    </div>`;
+                }).join('');
+            }
+            
+            // Stats globales
+            const totalDays = Math.max(data.person1.history.length, data.person2.history.length);
+            const loss1 = data.person1.startWeight && data.person1.currentWeight ? 
+                (data.person1.startWeight - data.person1.currentWeight).toFixed(1) : 0;
+            const loss2 = data.person2.startWeight && data.person2.currentWeight ? 
+                (data.person2.startWeight - data.person2.currentWeight).toFixed(1) : 0;
+            const bestScore = Math.max(
+                data.person1.history.length > 0 ? Math.max(...data.person1.history.map(h => h.score)) : 0,
+                data.person2.history.length > 0 ? Math.max(...data.person2.history.map(h => h.score)) : 0
+            );
+            
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('loss1').textContent = loss1 + 'kg';
+            document.getElementById('loss2').textContent = loss2 + 'kg';
+            document.getElementById('bestScore').textContent = bestScore;
+        }
+        
+        // Prise de photo (simulation)
+        function takePhoto(person) {
+            const today = new Date();
+            const lastPhotoDate = data[`person${person}`].lastPhoto;
+            
+            // Vérifier si c'est un lundi (1 = lundi en JavaScript)
+            const isMonday = today.getDay() === 1;
+            
+            if (!lastPhotoDate || (today - new Date(lastPhotoDate)) >= 7 * 24 * 60 * 60 * 1000) {
+                if (isMonday) {
+                    data[`person${person}`].lastPhoto = today.toISOString().split('T')[0];
+                    data.lastSync = Date.now();
+                    saveToStorage();
+                    updateUrl();
+                    showNotification('📸 Photo du lundi prise ! Tu progresses tellement bien ! ✨');
+                } else {
+                    showNotification('📅 Les photos se prennent le lundi matin ! Revenez lundi ! 😊');
+                }
+            } else {
+                const nextMonday = new Date(today);
+                nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7);
+                const daysUntilNext = Math.ceil((nextMonday - today) / (24 * 60 * 60 * 1000));
+                showNotification(`📅 Prochaine photo lundi ! Plus que ${daysUntilNext} jour(s) !`);
+            }
+        }
+        
+        // Jalons
+        function updateMilestones(person) {
+            const personData = data[`person${person}`];
+            const weightLoss = personData.startWeight && personData.currentWeight ? 
+                personData.startWeight - personData.currentWeight : 0;
+            
+            const milestones = [2.5, 5, 7.5, 10];
+            
+            milestones.forEach(milestone => {
+                const element = document.getElementById(`milestone${person}_${milestone.toString().replace('.', '')}`);
+                if (weightLoss >= milestone) {
+                    element.classList.add('achieved');
+                    element.innerHTML = `🎉 ${milestone}kg atteint !`;
+                } else {
+                    element.classList.remove('achieved');
+                    element.innerHTML = `🎯 Objectif ${milestone}kg`;
+                }
+            });
+        }
+        
+        // Citation quotidienne
+        function updateQuote() {
+            const today = new Date();
+            const quoteIndex = today.getDate() % quotes.length;
+            document.getElementById('quote').textContent = quotes[quoteIndex];
+        }
+        
+        // Statut synchronisation
+        function updateSyncStatus() {
+            const statusElement = document.getElementById('syncStatus');
+            statusElement.textContent = '🟢 Synchronisé';
+            statusElement.className = 'sync-status sync-online';
+        }
+        
+        // Synchronisation périodique
+        function startSyncCheck() {
+            syncInterval = setInterval(() => {
+                loadFromUrl();
+            }, 10000); // Vérifier toutes les 10 secondes
+        }
+        
+        // Copier lien
+        function copyLink() {
+            const shareLink = document.getElementById('shareLink').textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareLink).then(() => {
+                    showNotification('🔗 Lien copié ! Envoyez-le à votre partenaire !');
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = shareLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('🔗 Lien copié !');
+            }
+        }
+        
+        // Export données
+        function exportData() {
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                data: data
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `bien-etre-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('📤 Données exportées !');
+        }
+        
+        // Import données
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (importedData.data && importedData.data.person1 && importedData.data.person2) {
+                            // Fusionner les données
+                            data.person1.history = [...data.person1.history, ...importedData.data.person1.history];
+                            data.person2.history = [...data.person2.history, ...importedData.data.person2.history];
+                            
+                            // Supprimer doublons par date
+                            data.person1.history = data.person1.history.filter((item, index, self) =>
+                                index === self.findIndex(t => t.date === item.date)
+                            );
+                            data.person2.history = data.person2.history.filter((item, index, self) =>
+                                index === self.findIndex(t => t.date === item.date)
+                            );
+                            
+                            // Trier par date
+                            data.person1.history.sort((a, b) => new Date(a.date) - new Date(b.date));
+                            data.person2.history.sort((a, b) => new Date(a.date) - new Date(b.date));
+                            
+                            // Recalculer scores
+                            data.person1.totalScore = data.person1.history.reduce((sum, h) => sum + h.score, 0);
+                            data.person2.totalScore = data.person2.history.reduce((sum, h) => sum + h.score, 0);
+                            
+                            // Mettre à jour poids actuels
+                            if (data.person1.history.length > 0) {
+                                data.person1.currentWeight = data.person1.history[data.person1.history.length - 1].weight;
+                            }
+                            if (data.person2.history.length > 0) {
+                                data.person2.currentWeight = data.person2.history[data.person2.history.length - 1].weight;
+                            }
+                            
+                            data.lastSync = Date.now();
+                            saveToStorage();
+                            updateUrl();
+                            updateDisplay();
+                            
+                            showNotification('📥 Données importées et fusionnées !');
+                        } else {
+                            showNotification('❌ Fichier non valide !');
+                        }
+                    } catch (error) {
+                        showNotification('❌ Erreur lors de l\'import !');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // Notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            startSyncCheck();
+        });
+        
+        // Nettoyage
+        window.addEventListener('beforeunload', function() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+        });
+        
+        // Détection changements URL
+        window.addEventListener('popstate', function() {
+            loadFromUrl();
+        });
+    </script>
+</body>
+</html>
