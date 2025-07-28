@@ -125,33 +125,83 @@
         .nav-btn-1 {
             top: 0;
             left: 0;
-            background: linear-gradient(135deg, #a8edea, #fed6e3);
-            color: #4a4a4a;
-            clip-path: polygon(0% 0%, 85% 0%, 100% 35%, 85% 50%, 100% 65%, 85% 100%, 0% 100%);
+            background: #FFB84D;
+            color: white;
+            border-radius: 15px 0 0 15px;
+            position: relative;
+        }
+        
+        .nav-btn-1::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: inset 0 0 0 5px #FFB84D;
         }
         
         .nav-btn-2 {
             top: 0;
             right: 0;
-            background: linear-gradient(135deg, #ffecd2, #fcb69f);
-            color: #4a4a4a;
-            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 15% 65%, 0% 50%, 15% 35%);
+            background: #8BC34A;
+            color: white;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+        }
+        
+        .nav-btn-2::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8BC34A;
         }
         
         .nav-btn-history {
             bottom: 0;
             left: 0;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #F44336;
             color: white;
-            clip-path: polygon(0% 0%, 85% 0%, 100% 35%, 85% 50%, 100% 65%, 85% 100%, 0% 100%);
+            border-radius: 15px 0 0 15px;
+            position: relative;
+        }
+        
+        .nav-btn-history::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            bottom: 30px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: inset 0 0 0 5px #F44336;
         }
         
         .nav-btn-tech {
             bottom: 0;
             right: 0;
-            background: linear-gradient(135deg, #ff9a9e, #fecfef);
-            color: #4a4a4a;
-            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 15% 65%, 0% 50%, 15% 35%);
+            background: #2196F3;
+            color: white;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+        }
+        
+        .nav-btn-tech::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            bottom: 30px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
         }
         
         .nav-btn:hover {
@@ -450,17 +500,22 @@
                     margin: 0;
                 }
                 
+                .puzzle-container {
+                    width: 160px;
+                    height: 160px;
+                    margin: 0 auto;
+                }
+                
                 .nav-btn {
-                    padding: 10px 15px;
-                    font-size: 12px;
-                    flex: 1;
-                    min-width: 70px;
+                    width: 80px;
+                    height: 80px;
+                    font-size: 9px;
                     -webkit-tap-highlight-color: transparent;
                 }
                 
                 /* Ajouter padding en bas pour compenser la nav fixe */
                 body {
-                    padding-bottom: 80px;
+                    padding-bottom: 180px;
                 }
                 
                 /* Fix pour iOS Safari */
@@ -665,6 +720,274 @@
                 
                 <div class="input-group">
                     <label>👟 Mes pas aujourd'hui</label>
+                    <input type="number" id="steps1" placeholder="Ex: 8500">
+                </div>
+                
+                <div class="input-group">
+                    <label>💭 Comment je me sens</label>
+                    <textarea id="comment1" rows="2" placeholder="Ma journée..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveData(1)" id="saveBtn1">💾 Sauvegarder</button>
+                
+                <div class="history" id="history1"></div>
+            </div>
+            
+            <!-- Section Mi Amor -->
+            <div class="person-section" id="person2">
+                <h2 class="person-title">Mi Amor 🫶🧩</h2>
+                
+                <div class="score-display">
+                    <div class="score-number" id="score2">0</div>
+                    <div>points bien-être</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress2" style="width: 0%"></div>
+                    </div>
+                    <div>Perte: <span id="weightLoss2">0</span> kg / 10 kg</div>
+                </div>
+                
+                <div class="milestone" id="milestone2_25">🎯 Objectif 2.5kg</div>
+                <div class="milestone" id="milestone2_50">🎯 Objectif 5kg</div>
+                <div class="milestone" id="milestone2_75">🎯 Objectif 7.5kg</div>
+                <div class="milestone" id="milestone2_100">🏆 Objectif 10kg</div>
+                
+                <div class="input-group">
+                    <label>💗 Mon poids aujourd'hui (kg)</label>
+                    <input type="number" id="weight2" step="0.1" placeholder="Ex: 65.2">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de ventre (cm) - optionnel</label>
+                    <input type="number" id="waist2" step="0.1" placeholder="Ex: 75">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de taille (cm) - optionnel</label>
+                    <input type="number" id="waistline2" step="0.1" placeholder="Ex: 70">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de cuisse (cm) - optionnel</label>
+                    <input type="number" id="thigh2" step="0.1" placeholder="Ex: 60">
+                </div>
+                
+                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
+                    <label>📸 Photo bien-être (tous les lundis matins)</label>
+                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fière !</small><br>
+                    <input type="url" id="photoLink2" placeholder="Colle ici le lien de ta photo (Google Photos, etc.)" style="width: 100%; margin: 10px 0; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="button" onclick="savePhotoLink(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 5px;">📸 Sauvegarder photo</button>
+                    <div id="photoHistory2" style="max-height: 150px; overflow-y: auto; margin-top: 10px; text-align: left;"></div>
+                </div>
+                
+                <div class="categories">
+                    <div class="category">
+                        🍻 Alcool (verres)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('alcohol2', -1)">-</button>
+                            <input type="number" id="alcohol2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('alcohol2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥨 Apéritif (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('appetizer2', -1)">-</button>
+                            <input type="number" id="appetizer2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('appetizer2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍰 Sucre (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sugar2', -1)">-</button>
+                            <input type="number" id="sugar2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sugar2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍫 Dessert (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('dessert2', -1)">-</button>
+                            <input type="number" id="dessert2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('dessert2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥗 Légumes (portions)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('vegetables2', -1)">-</button>
+                            <input type="number" id="vegetables2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('vegetables2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🏃 Sport (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sport2', -1)">-</button>
+                            <input type="number" id="sport2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sport2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        😴 Sommeil (heures)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleep2', -0.5)">-</button>
+                            <input type="number" id="sleep2" min="0" max="15" step="0.5" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleep2', 0.5)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🌙 Qualité sommeil
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleepQuality2', -1)">-</button>
+                            <input type="number" id="sleepQuality2" min="1" max="10" value="5" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleepQuality2', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
+                    <strong>📖 Guide :</strong><br>
+                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
+                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
+                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
+                </div>
+                
+                <div class="input-group">
+                    <label>👟 Mes pas aujourd'hui</label>
+                    <input type="number" id="steps2" placeholder="Ex: 7500">
+                </div>
+                
+                <div class="input-group">
+                    <label>💭 Comment je me sens</label>
+                    <textarea id="comment2" rows="2" placeholder="Ma journée..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveData(2)" id="saveBtn2">💾 Sauvegarder</button>
+                
+                <div class="history" id="history2"></div>
+            </div>
+        </div>
+                <h2 class="person-title">Mon Amour 🧩🫶</h2>
+                
+                <div class="score-display">
+                    <div class="score-number" id="score1">0</div>
+                    <div>points bien-être</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress1" style="width: 0%"></div>
+                    </div>
+                    <div>Perte: <span id="weightLoss1">0</span> kg / 10 kg</div>
+                </div>
+                
+                <div class="milestone" id="milestone1_25">🎯 Objectif 2.5kg</div>
+                <div class="milestone" id="milestone1_50">🎯 Objectif 5kg</div>
+                <div class="milestone" id="milestone1_75">🎯 Objectif 7.5kg</div>
+                <div class="milestone" id="milestone1_100">🏆 Objectif 10kg</div>
+                
+                <div class="input-group">
+                    <label>💗 Mon poids aujourd'hui (kg)</label>
+                    <input type="number" id="weight1" step="0.1" placeholder="Ex: 85.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de ventre (cm) - optionnel</label>
+                    <input type="number" id="waist1" step="0.1" placeholder="Ex: 95">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de taille (cm) - optionnel</label>
+                    <input type="number" id="waistline1" step="0.1" placeholder="Ex: 90">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de cuisse (cm) - optionnel</label>
+                    <input type="number" id="thigh1" step="0.1" placeholder="Ex: 65">
+                </div>
+                
+                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
+                    <label>📸 Photo bien-être (tous les lundis matins)</label>
+                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fier !</small><br>
+                    <input type="url" id="photoLink1" placeholder="Colle ici le lien de ta photo (Google Photos, etc.)" style="width: 100%; margin: 10px 0; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="button" onclick="savePhotoLink(1)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 5px;">📸 Sauvegarder photo</button>
+                    <div id="photoHistory1" style="max-height: 150px; overflow-y: auto; margin-top: 10px; text-align: left;"></div>
+                </div>
+                
+                <div class="categories">
+                    <div class="category">
+                        🍻 Alcool (verres)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('alcohol1', -1)">-</button>
+                            <input type="number" id="alcohol1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('alcohol1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥨 Apéritif (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('appetizer1', -1)">-</button>
+                            <input type="number" id="appetizer1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('appetizer1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍰 Sucre (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sugar1', -1)">-</button>
+                            <input type="number" id="sugar1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sugar1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍫 Dessert (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('dessert1', -1)">-</button>
+                            <input type="number" id="dessert1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('dessert1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥗 Légumes (portions)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('vegetables1', -1)">-</button>
+                            <input type="number" id="vegetables1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('vegetables1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🏃 Sport (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sport1', -1)">-</button>
+                            <input type="number" id="sport1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sport1', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        😴 Sommeil (heures)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleep1', -0.5)">-</button>
+                            <input type="number" id="sleep1" min="0" max="15" step="0.5" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleep1', 0.5)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🌙 Qualité sommeil
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleepQuality1', -1)">-</button>
+                            <input type="number" id="sleepQuality1" min="1" max="10" value="5" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleepQuality1', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
+                    <strong>📖 Guide :</strong><br>
+                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
+                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
+                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
+                </div>
+                
+                <div class="input-group">
+                    <label>👟 Mes pas aujourd'hui</label>
                     <input type="number" id="steps2" placeholder="Ex: 7500">
                 </div>
                 
@@ -746,7 +1069,7 @@
             challengeId: null
         };
         
-        // Citations inspirantes
+        // Citations inspirantes (une par jour)
         const quotes = [
             "Chaque petit pas compte. Vous êtes plus forts ensemble ! 💪✨",
             "La beauté commence quand vous décidez d'être vous-mêmes. 🌸",
@@ -754,7 +1077,31 @@
             "Chaque jour est une nouvelle chance de prendre soin de vous. 🌟",
             "Ensemble, vous retrouvez votre force ! ⚡",
             "Soyez fiers de chaque effort, même le plus petit. 🌈",
-            "Votre bien-être est un investissement pour votre couple. 💝"
+            "Votre bien-être est un investissement pour votre couple. 💝",
+            "L'amour de soi commence par de petites actions bienveillantes. 🌺",
+            "Vous n'êtes pas seuls dans ce voyage, vous vous soutenez ! 🤝",
+            "Chaque kilo perdu est une victoire partagée ! 🏆",
+            "Votre santé est le plus beau cadeau que vous vous offrez. 🎁",
+            "Les habitudes saines se construisent jour après jour. 🌱",
+            "Votre motivation d'aujourd'hui est la fierté de demain ! ⭐",
+            "Ensemble, vous transformez vos rêves en réalité ! ✨",
+            "Chaque légume mangé nourrit votre amour mutuel. 🥗💕",
+            "Le sport à deux, c'est deux fois plus de plaisir ! 🏃‍♀️🏃‍♂️",
+            "Votre sommeil réparateur construit votre bonheur commun. 😴💤",
+            "Boire de l'eau, c'est arroser votre jardin intérieur ! 💧🌿",
+            "Vos progrès s'additionnent, vos amours se multiplient ! ➕💖",
+            "Aujourd'hui encore, vous choisissez de vous aimer ! 💌",
+            "Votre constance est votre plus grande force ! 💪⚡",
+            "Chaque 'non' à la tentation est un 'oui' à votre bien-être ! ✋✅",
+            "Vos corps changent, votre amour grandit ! 📈💕",
+            "Le chemin est long, mais vous le parcourez main dans la main ! 👫",
+            "Votre discipline d'aujourd'hui sera votre liberté de demain ! 🗝️",
+            "Deux cœurs qui battent pour un même objectif ! 💓💓",
+            "Vos efforts conjugués donnent des résultats exceptionnels ! 🤝🌟",
+            "Chaque jour vous rapproche de la meilleure version de vous ! 🦋",
+            "L'amour vrai encourage les plus beaux changements ! 💕🌸",
+            "Votre persévérance écrit la plus belle des histoires d'amour ! 📖💝",
+            "Célébrez chaque petite victoire, elle en appelle d'autres ! 🎉"
         ];
 
         // Vérifier si Firebase est configuré
