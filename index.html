@@ -407,34 +407,6 @@
         <div class="header">
             <h1>Notre Journée Bien-Être 💕</h1>
             
-            <div class="sync-info">
-                <div class="sync-status" id="syncStatus">🔄 Connexion Firebase...</div>
-                
-                <!-- Configuration Firebase à personnaliser -->
-                <div class="setup-warning" id="setupWarning">
-                    <strong>⚠️ Configuration Firebase Requise</strong><br>
-                    <small>Remplacez les clés Firebase ci-dessous par les vôtres pour activer la synchronisation</small>
-                </div>
-                
-                <div class="firebase-info" id="firebaseInfo" style="display: none;">
-                    <strong>🔥 Synchronisation Firebase Active !</strong><br>
-                    <small>✅ Temps réel automatique • ✅ Données cloud sécurisées • ✅ Historique permanent</small>
-                </div>
-                
-                <div class="realtime-indicator" id="realtimeIndicator">
-                    🌐 Prêt pour la synchronisation temps réel
-                </div>
-                
-                <div style="font-size: 13px; margin-bottom: 10px;">
-                    <strong>🔗 Lien de partage automatique :</strong><br>
-                    <small>Partagez ce lien - synchronisation automatique !</small>
-                </div>
-                <div class="share-link" id="shareLink">Génération du lien...</div>
-                <button class="copy-btn" onclick="copyLink()">📋 Copier le lien</button>
-                <button class="copy-btn" onclick="exportData()">📤 Exporter données</button>
-                <button class="copy-btn" onclick="resetChallenge()">🔄 Nouveau défi</button>
-            </div>
-            
             <div class="quote" id="quote">
                 "Chaque petit pas compte. Vous êtes plus forts ensemble ! 💪✨"
             </div>
@@ -501,7 +473,9 @@
                 <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
                     <label>📸 Photo bien-être (tous les lundis matins)</label>
                     <small>Photo entière face et côté - Pour voir tes progrès et te sentir fier !</small><br>
-                    <button type="button" onclick="takePhoto(1)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
+                    <input type="url" id="photoLink1" placeholder="Colle ici le lien de ta photo (Google Photos, etc.)" style="width: 100%; margin: 10px 0; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="button" onclick="savePhotoLink(1)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 5px;">📸 Sauvegarder photo</button>
+                    <div id="photoHistory1" style="max-height: 150px; overflow-y: auto; margin-top: 10px; text-align: left;"></div>
                 </div>
                 
                 <div class="categories">
@@ -595,6 +569,38 @@
         </div>
     </div>
     
+    <!-- Section technique en bas -->
+    <div class="container" style="margin-top: 20px;">
+        <div class="sync-info">
+            <div class="sync-status" id="syncStatus">🔄 Connexion Firebase...</div>
+            
+            <!-- Configuration Firebase à personnaliser -->
+            <div class="setup-warning" id="setupWarning">
+                <strong>⚠️ Configuration Firebase Requise</strong><br>
+                <small>Remplacez les clés Firebase ci-dessous par les vôtres pour activer la synchronisation</small>
+            </div>
+            
+            <div class="firebase-info" id="firebaseInfo" style="display: none;">
+                <strong>🔥 Synchronisation Firebase Active !</strong><br>
+                <small>✅ Temps réel automatique • ✅ Données cloud sécurisées • ✅ Historique permanent</small>
+            </div>
+            
+            <div class="realtime-indicator" id="realtimeIndicator">
+                🌐 Prêt pour la synchronisation temps réel
+            </div>
+            
+            <div style="font-size: 13px; margin-bottom: 10px;">
+                <strong>🔗 Lien de partage automatique :</strong><br>
+                <small>Partagez ce lien - synchronisation automatique !</small>
+            </div>
+            <div class="share-link" id="shareLink">Génération du lien...</div>
+            <button class="copy-btn" onclick="copyLink()">📋 Copier le lien</button>
+            <button class="copy-btn" onclick="exportData()">📤 Exporter données</button>
+            <button class="copy-btn" onclick="showFullHistory()">📊 Historique complet</button>
+            <button class="copy-btn" onclick="resetChallenge()">🔄 Nouveau défi</button>
+        </div>
+    </div>
+    
     <div class="notification" id="notification"></div>
 
     <!-- Firebase SDK -->
@@ -621,8 +627,8 @@
         
         // Données globales avec synchronisation
         let data = {
-            person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
-            person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+            person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0, photos: [] },
+            person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0, photos: [] },
             startDate: new Date().toISOString().split('T')[0],
             lastSync: Date.now(),
             challengeId: null
@@ -691,6 +697,8 @@
             data.challengeId = challengeId;
             loadFromLocalStorage();
             updateDisplay();
+            updatePhotoHistory(1);
+            updatePhotoHistory(2);
             updateQuote();
             updateShareLink();
             showNotification('📱 Mode local activé - Configurez Firebase pour la synchronisation');
@@ -1085,35 +1093,195 @@
             document.getElementById('bestScore').textContent = bestScore;
         }
 
-        // Prise de photo
-        function takePhoto(person) {
-            const today = new Date();
-            const lastPhotoDate = data[`person${person}`].lastPhoto;
+        // Sauvegarde lien photo
+        function savePhotoLink(person) {
+            const photoLinkInput = document.getElementById(`photoLink${person}`);
+            const photoLink = photoLinkInput.value.trim();
             
+            if (!photoLink) {
+                showNotification('📸 Merci d\'ajouter un lien vers votre photo !');
+                return;
+            }
+            
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
             const isMonday = today.getDay() === 1;
             
-            if (!lastPhotoDate || (today - new Date(lastPhotoDate)) >= 7 * 24 * 60 * 60 * 1000) {
-                if (isMonday) {
-                    data[`person${person}`].lastPhoto = today.toISOString().split('T')[0];
-                    data.lastSync = Date.now();
-                    
-                    if (isFirebaseConfigured && db) {
-                        saveToFirebase();
-                    } else {
-                        saveToLocalStorage();
-                        updateUrl();
-                    }
-                    
-                    showNotification('📸 Photo du lundi prise ! Tu progresses tellement bien ! ✨');
-                } else {
-                    showNotification('📅 Les photos se prennent le lundi matin ! Revenez lundi ! 😊');
-                }
-            } else {
-                const nextMonday = new Date(today);
-                nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7);
-                const daysUntilNext = Math.ceil((nextMonday - today) / (24 * 60 * 60 * 1000));
-                showNotification(`📅 Prochaine photo lundi ! Plus que ${daysUntilNext} jour(s) !`);
+            // Vérifier si on a déjà une photo aujourd'hui
+            const todayPhoto = data[`person${person}`].photos.find(p => p.date === todayString);
+            
+            if (todayPhoto) {
+                showNotification('📸 Photo déjà ajoutée aujourd\'hui ! À lundi prochain ! ✨');
+                return;
             }
+            
+            if (!isMonday) {
+                const daysUntilMonday = today.getDay() === 0 ? 1 : (8 - today.getDay());
+                showNotification(`📅 Les photos se prennent le lundi matin ! Plus que ${daysUntilMonday} jour(s) ! 😊`);
+                return;
+            }
+            
+            // Ajouter la photo
+            const photoEntry = {
+                date: todayString,
+                link: photoLink,
+                timestamp: Date.now()
+            };
+            
+            if (!data[`person${person}`].photos) {
+                data[`person${person}`].photos = [];
+            }
+            
+            data[`person${person}`].photos.push(photoEntry);
+            data.lastSync = Date.now();
+            
+            // Sauvegarder
+            if (isFirebaseConfigured && db) {
+                saveToFirebase();
+            } else {
+                saveToLocalStorage();
+                updateUrl();
+            }
+            
+            // Nettoyer le champ
+            photoLinkInput.value = '';
+            
+            // Mettre à jour l'affichage
+            updatePhotoHistory(person);
+            
+            showNotification('📸 Photo du lundi sauvegardée ! Excellent travail ! ✨');
+        }
+
+        // Mise à jour historique photos
+        function updatePhotoHistory(person) {
+            const photoHistoryDiv = document.getElementById(`photoHistory${person}`);
+            const photos = data[`person${person}`].photos || [];
+            
+            if (photos.length === 0) {
+                photoHistoryDiv.innerHTML = '<small style="color: #666;">Aucune photo encore</small>';
+                return;
+            }
+            
+            photoHistoryDiv.innerHTML = photos.slice().reverse().map(photo => {
+                const date = new Date(photo.date).toLocaleDateString('fr-FR');
+                return `<div style="margin: 5px 0; padding: 8px; background: rgba(255,255,255,0.8); border-radius: 5px; border-left: 3px solid #4ecdc4;">
+                    <strong>${date}</strong><br>
+                    <a href="${photo.link}" target="_blank" style="color: #4ecdc4; text-decoration: none; font-size: 12px;">📸 Voir la photo</a>
+                </div>`;
+            }).join('');
+        }
+
+        // Prise de photo (ancienne fonction, maintenant simplifiée)
+        function takePhoto(person) {
+            showNotification('📸 Utilisez le champ "lien photo" ci-dessous pour ajouter votre photo ! 😊');
+        }
+
+        // Historique complet partagé
+        function showFullHistory() {
+            let historyHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="closeFullHistory(event)">
+                    <div style="background: white; padding: 30px; border-radius: 20px; max-width: 90%; max-height: 90%; overflow-y: auto; position: relative;" onclick="event.stopPropagation();">
+                        <button onclick="closeFullHistory()" style="position: absolute; top: 15px; right: 20px; background: #ff6b9d; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">×</button>
+                        <h2 style="text-align: center; margin-bottom: 20px; color: #333;">📊 Historique Complet du Couple</h2>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            `;
+            
+            // Historique pour chaque personne
+            for (let i = 1; i <= 2; i++) {
+                const person = data[`person${i}`];
+                historyHtml += `
+                    <div>
+                        <h3 style="color: #ff6b9d; text-align: center; margin-bottom: 15px;">${person.name}</h3>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                `;
+                
+                if (person.history.length === 0) {
+                    historyHtml += '<p style="text-align: center; color: #666;">Aucune donnée encore</p>';
+                } else {
+                    person.history.slice().reverse().forEach(h => {
+                        const date = new Date(h.date).toLocaleDateString('fr-FR');
+                        historyHtml += `
+                            <div style="background: #f8f9fa; margin: 8px 0; padding: 12px; border-radius: 8px; border-left: 3px solid #ff6b9d;">
+                                <strong>${date}</strong><br>
+                                <strong>Poids:</strong> ${h.weight}kg | <strong>Score:</strong> ${h.score} points<br>
+                                <small style="color: #666;">
+                                    🍻 ${h.values.alcohol || 0} | 🥨 ${h.values.appetizer || 0} | 🍰 ${h.values.sugar || 0} | 🍫 ${h.values.dessert || 0}<br>
+                                    🥗 ${h.values.vegetables || 0} | 🏃 ${h.values.sport || 0} | 😴 ${h.values.sleep || 0}h | 🌙 ${h.values.sleepQuality || 0}/10
+                                </small>
+                                ${h.values.comment ? `<br><em style="color: #555;">"${h.values.comment}"</em>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Ajouter photos
+                const photos = person.photos || [];
+                if (photos.length > 0) {
+                    historyHtml += '<h4 style="color: #4ecdc4; margin: 15px 0 10px 0;">📸 Photos</h4>';
+                    photos.slice().reverse().forEach(photo => {
+                        const date = new Date(photo.date).toLocaleDateString('fr-FR');
+                        historyHtml += `
+                            <div style="background: #e8f5e8; margin: 5px 0; padding: 8px; border-radius: 5px; border-left: 3px solid #4ecdc4;">
+                                <strong>${date}</strong><br>
+                                <a href="${photo.link}" target="_blank" style="color: #4ecdc4; text-decoration: none;">📸 Voir la photo</a>
+                            </div>
+                        `;
+                    });
+                }
+                
+                historyHtml += '</div></div>';
+            }
+            
+            historyHtml += `
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="exportFullHistory()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin: 5px;">📄 Exporter PDF</button>
+                            <button onclick="closeFullHistory()" style="background: #fd79a8; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin: 5px;">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', historyHtml);
+        }
+
+        // Fermer historique complet
+        function closeFullHistory(event) {
+            if (!event || event.target.getAttribute('onclick') === 'closeFullHistory(event)' || event.target.getAttribute('onclick') === 'closeFullHistory()') {
+                const modal = document.querySelector('[style*="position: fixed"][style*="z-index: 10000"]');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        }
+
+        // Export historique complet
+        function exportFullHistory() {
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                couple: {
+                    person1: data.person1,
+                    person2: data.person2
+                },
+                summary: {
+                    totalDays: Math.max(data.person1.history.length, data.person2.history.length),
+                    totalPhotos: (data.person1.photos?.length || 0) + (data.person2.photos?.length || 0),
+                    person1WeightLoss: data.person1.startWeight && data.person1.currentWeight ? 
+                        (data.person1.startWeight - data.person1.currentWeight).toFixed(1) : 0,
+                    person2WeightLoss: data.person2.startWeight && data.person2.currentWeight ? 
+                        (data.person2.startWeight - data.person2.currentWeight).toFixed(1) : 0
+                }
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `historique-couple-complet-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('📄 Historique complet exporté !');
         }
 
         // Jalons
@@ -1191,8 +1359,8 @@
                 // Nouveau challenge
                 challengeId = generateChallengeId();
                 data = {
-                    person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
-                    person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+                    person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0, photos: [] },
+                    person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0, photos: [] },
                     startDate: new Date().toISOString().split('T')[0],
                     lastSync: Date.now(),
                     challengeId: challengeId
@@ -1299,7 +1467,9 @@
                 <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
                     <label>📸 Photo bien-être (tous les lundis matins)</label>
                     <small>Photo entière face et côté - Pour voir tes progrès et te sentir fière !</small><br>
-                    <button type="button" onclick="takePhoto(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
+                    <input type="url" id="photoLink2" placeholder="Colle ici le lien de ta photo (Google Photos, etc.)" style="width: 100%; margin: 10px 0; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="button" onclick="savePhotoLink(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 5px;">📸 Sauvegarder photo</button>
+                    <div id="photoHistory2" style="max-height: 150px; overflow-y: auto; margin-top: 10px; text-align: left;"></div>
                 </div>
                 
                 <div class="categories">
