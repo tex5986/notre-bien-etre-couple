@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notre Journée Bien-Être 💕</title>
+    <title>Notre Journée Bien-Être 💕 - Synchronisé</title>
     <style>
         * {
             margin: 0;
@@ -48,7 +48,7 @@
         
         .sync-status {
             display: inline-block;
-            padding: 5px 15px;
+            padding: 8px 15px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
@@ -58,11 +58,46 @@
         .sync-online {
             background: #00b894;
             color: white;
+            animation: pulse 2s infinite;
         }
         
         .sync-offline {
             background: #fd79a8;
             color: white;
+        }
+        
+        .sync-connecting {
+            background: #fdcb6e;
+            color: #333;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+        
+        .firebase-info {
+            background: rgba(46, 125, 50, 0.1);
+            border: 2px solid #4caf50;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .setup-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            color: #856404;
         }
         
         .share-link {
@@ -223,6 +258,7 @@
         .category {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             background: rgba(255,255,255,0.7);
             padding: 10px;
             border-radius: 8px;
@@ -235,6 +271,30 @@
             margin-left: 10px;
             padding: 5px;
             text-align: center;
+        }
+        
+        .counter-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .counter-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-btn:hover {
+            background: #5a6fd8;
         }
         
         .btn {
@@ -252,6 +312,11 @@
         
         .btn:hover {
             transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         .history {
@@ -282,11 +347,23 @@
             display: none;
             z-index: 1000;
             animation: slideIn 0.3s ease;
+            max-width: 300px;
         }
         
         @keyframes slideIn {
             from { transform: translateX(300px); }
             to { transform: translateX(0); }
+        }
+        
+        .realtime-indicator {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4caf50;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #2e7d32;
+            margin: 5px 0;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
@@ -307,7 +384,6 @@
             .category {
                 font-size: 0.8em;
                 padding: 12px 8px;
-                justify-content: space-between;
             }
             
             .category input {
@@ -332,15 +408,31 @@
             <h1>Notre Journée Bien-Être 💕</h1>
             
             <div class="sync-info">
-                <div class="sync-status" id="syncStatus">🔄 Synchronisation...</div>
+                <div class="sync-status" id="syncStatus">🔄 Connexion Firebase...</div>
+                
+                <!-- Configuration Firebase à personnaliser -->
+                <div class="setup-warning" id="setupWarning">
+                    <strong>⚠️ Configuration Firebase Requise</strong><br>
+                    <small>Remplacez les clés Firebase ci-dessous par les vôtres pour activer la synchronisation</small>
+                </div>
+                
+                <div class="firebase-info" id="firebaseInfo" style="display: none;">
+                    <strong>🔥 Synchronisation Firebase Active !</strong><br>
+                    <small>✅ Temps réel automatique • ✅ Données cloud sécurisées • ✅ Historique permanent</small>
+                </div>
+                
+                <div class="realtime-indicator" id="realtimeIndicator">
+                    🌐 Prêt pour la synchronisation temps réel
+                </div>
+                
                 <div style="font-size: 13px; margin-bottom: 10px;">
                     <strong>🔗 Lien de partage automatique :</strong><br>
-                    <small>Copiez ce lien et envoyez-le à votre partenaire pour synchroniser vos données !</small>
+                    <small>Partagez ce lien - synchronisation automatique !</small>
                 </div>
                 <div class="share-link" id="shareLink">Génération du lien...</div>
                 <button class="copy-btn" onclick="copyLink()">📋 Copier le lien</button>
                 <button class="copy-btn" onclick="exportData()">📤 Exporter données</button>
-                <button class="copy-btn" onclick="importData()">📥 Importer données</button>
+                <button class="copy-btn" onclick="resetChallenge()">🔄 Nouveau défi</button>
             </div>
             
             <div class="quote" id="quote">
@@ -414,121 +506,68 @@
                 
                 <div class="categories">
                     <div class="category">
-                        🍻 Alcool (verres) <input type="number" id="alcohol1" min="0" max="10" value="0">
+                        🍻 Alcool (verres)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('alcohol1', -1)">-</button>
+                            <input type="number" id="alcohol1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('alcohol1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🥨 Apéritif (intensité) <input type="number" id="appetizer1" min="0" max="10" value="0">
+                        🥨 Apéritif (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('appetizer1', -1)">-</button>
+                            <input type="number" id="appetizer1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('appetizer1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🍰 Sucre (intensité) <input type="number" id="sugar1" min="0" max="10" value="0">
+                        🍰 Sucre (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sugar1', -1)">-</button>
+                            <input type="number" id="sugar1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sugar1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🍫 Dessert (intensité) <input type="number" id="dessert1" min="0" max="10" value="0">
+                        🍫 Dessert (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('dessert1', -1)">-</button>
+                            <input type="number" id="dessert1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('dessert1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🥗 Légumes (portions) <input type="number" id="vegetables1" min="0" max="10" value="0">
+                        🥗 Légumes (portions)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('vegetables1', -1)">-</button>
+                            <input type="number" id="vegetables1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('vegetables1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🏃 Sport (intensité) <input type="number" id="sport1" min="0" max="10" value="0">
+                        🏃 Sport (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sport1', -1)">-</button>
+                            <input type="number" id="sport1" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sport1', 1)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        😴 Sommeil (heures) <input type="number" id="sleep1" min="0" max="15" step="0.5" value="0">
+                        😴 Sommeil (heures)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleep1', -0.5)">-</button>
+                            <input type="number" id="sleep1" min="0" max="15" step="0.5" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleep1', 0.5)">+</button>
+                        </div>
                     </div>
                     <div class="category">
-                        🌙 Qualité sommeil <input type="number" id="sleepQuality1" min="1" max="10" value="5">
-                    </div>
-                </div>
-                
-                <div style="background: rgba(255,255,255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
-                    <strong>📖 Guide :</strong><br>
-                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
-                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
-                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
-                </div>
-                
-                <div class="input-group">
-                    <label>👟 Mes pas aujourd'hui</label>
-                    <input type="number" id="steps1" placeholder="Ex: 8500">
-                </div>
-                
-                <div class="input-group">
-                    <label>💭 Comment je me sens</label>
-                    <textarea id="comment1" rows="2" placeholder="Ma journée..."></textarea>
-                </div>
-                
-                <button class="btn" onclick="saveData(1)">💾 Sauvegarder</button>
-                
-                <div class="history" id="history1"></div>
-            </div>
-            
-            <!-- Section Mi Amor -->
-            <div class="person-section">
-                <h2 class="person-title">Mi Amor 🫶🧩</h2>
-                
-                <div class="score-display">
-                    <div class="score-number" id="score2">0</div>
-                    <div>points bien-être</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress2" style="width: 0%"></div>
-                    </div>
-                    <div>Perte: <span id="weightLoss2">0</span> kg / 10 kg</div>
-                </div>
-                
-                <div class="milestone" id="milestone2_25">🎯 Objectif 2.5kg</div>
-                <div class="milestone" id="milestone2_50">🎯 Objectif 5kg</div>
-                <div class="milestone" id="milestone2_75">🎯 Objectif 7.5kg</div>
-                <div class="milestone" id="milestone2_100">🏆 Objectif 10kg</div>
-                
-                <div class="input-group">
-                    <label>💗 Mon poids aujourd'hui (kg)</label>
-                    <input type="number" id="weight2" step="0.1" placeholder="Ex: 65.2">
-                </div>
-                
-                <div class="input-group">
-                    <label>📏 Tour de ventre (cm) - optionnel</label>
-                    <input type="number" id="waist2" step="0.1" placeholder="Ex: 75">
-                </div>
-                
-                <div class="input-group">
-                    <label>📏 Tour de taille (cm) - optionnel</label>
-                    <input type="number" id="waistline2" step="0.1" placeholder="Ex: 70">
-                </div>
-                
-                <div class="input-group">
-                    <label>📏 Tour de cuisse (cm) - optionnel</label>
-                    <input type="number" id="thigh2" step="0.1" placeholder="Ex: 60">
-                </div>
-                
-                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
-                    <label>📸 Photo bien-être (tous les lundis matins)</label>
-                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fière !</small><br>
-                    <button type="button" onclick="takePhoto(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
-                </div>
-                
-                <div class="categories">
-                    <div class="category">
-                        🍻 Alcool (verres) <input type="number" id="alcohol2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        🥨 Apéritif (intensité) <input type="number" id="appetizer2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        🍰 Sucre (intensité) <input type="number" id="sugar2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        🍫 Dessert (intensité) <input type="number" id="dessert2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        🥗 Légumes (portions) <input type="number" id="vegetables2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        🏃 Sport (intensité) <input type="number" id="sport2" min="0" max="10" value="0">
-                    </div>
-                    <div class="category">
-                        😴 Sommeil (heures) <input type="number" id="sleep2" min="0" max="15" step="0.5" value="0">
-                    </div>
-                    <div class="category">
-                        🌙 Qualité sommeil <input type="number" id="sleepQuality2" min="1" max="10" value="5">
+                        🌙 Qualité sommeil
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleepQuality1', -1)">-</button>
+                            <input type="number" id="sleepQuality1" min="1" max="10" value="5" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleepQuality1', 1)">+</button>
+                        </div>
                     </div>
                 </div>
                 
@@ -549,7 +588,7 @@
                     <textarea id="comment2" rows="2" placeholder="Ma journée..."></textarea>
                 </div>
                 
-                <button class="btn" onclick="saveData(2)">💾 Sauvegarder</button>
+                <button class="btn" onclick="saveData(2)" id="saveBtn2">💾 Sauvegarder</button>
                 
                 <div class="history" id="history2"></div>
             </div>
@@ -558,7 +597,28 @@
     
     <div class="notification" id="notification"></div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <script>
+        // 🔥 CONFIGURATION FIREBASE ACTIVÉE ✅
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPVDnzpGkupSteY0f32ui6FCGHR}6S8ug",
+            authDomain: "bien-etre-couple.firebaseapp.com",
+            projectId: "bien-etre-couple",
+            storageBucket: "bien-etre-couple.firebasestorage.app",
+            messagingSenderId: "242360526489",
+            appId: "1:242360526489:web:342f543376850225413a08",
+            measurementId: "G-MJYGT3YMPP"
+        };
+
+        // Variables globales
+        let db = null;
+        let unsubscribe = null;
+        let challengeId = null;
+        let isFirebaseConfigured = false;
+        
         // Données globales avec synchronisation
         let data = {
             person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
@@ -567,8 +627,6 @@
             lastSync: Date.now(),
             challengeId: null
         };
-        
-        let syncInterval = null;
         
         // Citations inspirantes
         const quotes = [
@@ -580,86 +638,157 @@
             "Soyez fiers de chaque effort, même le plus petit. 🌈",
             "Votre bien-être est un investissement pour votre couple. 💝"
         ];
-        
+
+        // Vérifier si Firebase est configuré
+        function checkFirebaseConfig() {
+            isFirebaseConfigured = firebaseConfig.apiKey !== "VOTRE_API_KEY" && 
+                                   firebaseConfig.projectId !== "VOTRE_PROJECT_ID";
+            
+            if (isFirebaseConfigured) {
+                document.getElementById('setupWarning').style.display = 'none';
+                document.getElementById('firebaseInfo').style.display = 'block';
+                return true;
+            } else {
+                document.getElementById('setupWarning').style.display = 'block';
+                document.getElementById('firebaseInfo').style.display = 'none';
+                updateSyncStatus('offline');
+                return false;
+            }
+        }
+
+        // Initialiser Firebase
+        function initFirebase() {
+            if (!checkFirebaseConfig()) {
+                console.log('Firebase non configuré - mode local');
+                fallbackToLocalMode();
+                return;
+            }
+
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                updateSyncStatus('connecting');
+                
+                // Test de connexion
+                db.enableNetwork().then(() => {
+                    updateSyncStatus('online');
+                    initializeChallenge();
+                }).catch((error) => {
+                    console.error('Erreur Firebase:', error);
+                    updateSyncStatus('offline');
+                    fallbackToLocalMode();
+                });
+            } catch (error) {
+                console.error('Erreur initialisation Firebase:', error);
+                updateSyncStatus('offline');
+                fallbackToLocalMode();
+            }
+        }
+
+        // Mode de secours local
+        function fallbackToLocalMode() {
+            challengeId = getChallengeIdFromUrl() || generateChallengeId();
+            data.challengeId = challengeId;
+            loadFromLocalStorage();
+            updateDisplay();
+            updateQuote();
+            updateShareLink();
+            showNotification('📱 Mode local activé - Configurez Firebase pour la synchronisation');
+        }
+
         // Génération ID unique
         function generateChallengeId() {
             return 'challenge_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
-        
-        // Obtenir/créer ID challenge
-        function getChallengeId() {
+
+        // Obtenir ID depuis URL
+        function getChallengeIdFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
-            let id = urlParams.get('id');
+            return urlParams.get('id');
+        }
+
+        // Initialiser défi
+        function initializeChallenge() {
+            challengeId = getChallengeIdFromUrl();
             
-            if (!id) {
-                id = generateChallengeId();
-                data.challengeId = id;
+            if (!challengeId) {
+                challengeId = generateChallengeId();
                 updateUrl();
-            } else {
-                data.challengeId = id;
             }
             
-            return id;
-        }
-        
-        // Mise à jour URL
-        function updateUrl() {
-            const url = new URL(window.location);
-            url.searchParams.set('id', data.challengeId);
-            url.searchParams.set('data', encodeData(data));
-            url.searchParams.set('sync', Date.now());
+            data.challengeId = challengeId;
             
-            window.history.replaceState({}, '', url.toString());
+            if (isFirebaseConfigured && db) {
+                setupRealtimeListener();
+            } else {
+                loadFromLocalStorage();
+            }
+            
+            updateDisplay();
+            updateQuote();
             updateShareLink();
         }
-        
-        // Mise à jour lien partage
-        function updateShareLink() {
-            const currentUrl = window.location.href;
-            document.getElementById('shareLink').textContent = currentUrl;
-        }
-        
-        // Encodage/décodage données
-        function encodeData(data) {
-            return btoa(encodeURIComponent(JSON.stringify(data)));
-        }
-        
-        function decodeData(encoded) {
-            try {
-                return JSON.parse(decodeURIComponent(atob(encoded)));
-            } catch (e) {
-                return null;
-            }
-        }
-        
-        // Chargement depuis URL
-        function loadFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const encodedData = urlParams.get('data');
-            const syncTime = parseInt(urlParams.get('sync')) || 0;
+
+        // Écoute temps réel Firebase
+        function setupRealtimeListener() {
+            if (!isFirebaseConfigured || !db) return;
+
+            const docRef = db.collection('challenges').doc(challengeId);
             
-            if (encodedData && syncTime > data.lastSync) {
-                const urlData = decodeData(encodedData);
-                if (urlData && urlData.lastSync > data.lastSync) {
-                    data = { ...urlData, lastSync: syncTime };
-                    showNotification('🔄 Données synchronisées !');
-                    updateDisplay();
-                    return true;
+            unsubscribe = docRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const firebaseData = doc.data();
+                    if (firebaseData.lastSync > data.lastSync) {
+                        data = firebaseData;
+                        updateDisplay();
+                        updateMilestones(1);
+                        updateMilestones(2);
+                        showNotification('🔄 Données synchronisées !');
+                    }
+                } else {
+                    // Document n'existe pas, le créer
+                    saveToFirebase();
                 }
-            }
-            
-            return false;
+            }, (error) => {
+                console.error('Erreur listener:', error);
+                updateSyncStatus('offline');
+                fallbackToLocalMode();
+            });
         }
-        
-        // Chargement données
-        function loadData() {
-            const challengeId = getChallengeId();
+
+        // Sauvegarder dans Firebase
+        function saveToFirebase() {
+            if (!isFirebaseConfigured || !db) {
+                saveToLocalStorage();
+                return;
+            }
+
+            data.lastSync = Date.now();
             
-            // Essayer de charger depuis l'URL
-            const loadedFromUrl = loadFromUrl();
-            
-            if (!loadedFromUrl) {
-                // Charger depuis localStorage
+            db.collection('challenges').doc(challengeId).set(data)
+                .then(() => {
+                    console.log('Données sauvegardées Firebase');
+                    updateSyncStatus('online');
+                })
+                .catch((error) => {
+                    console.error('Erreur sauvegarde Firebase:', error);
+                    saveToLocalStorage();
+                    updateSyncStatus('offline');
+                });
+        }
+
+        // Sauvegarder localement
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('coupleWellnessData_' + challengeId, JSON.stringify(data));
+            } catch (error) {
+                console.error('Erreur localStorage:', error);
+            }
+        }
+
+        // Charger depuis localStorage
+        function loadFromLocalStorage() {
+            try {
                 const saved = localStorage.getItem('coupleWellnessData_' + challengeId);
                 if (saved) {
                     const localData = JSON.parse(saved);
@@ -667,53 +796,107 @@
                         data = localData;
                     }
                 }
+            } catch (error) {
+                console.error('Erreur chargement localStorage:', error);
+            }
+        }
+
+        // Mise à jour statut sync
+        function updateSyncStatus(status) {
+            const statusElement = document.getElementById('syncStatus');
+            const indicator = document.getElementById('realtimeIndicator');
+            
+            switch (status) {
+                case 'online':
+                    statusElement.textContent = '🟢 Synchronisé en temps réel';
+                    statusElement.className = 'sync-status sync-online';
+                    indicator.textContent = '⚡ Synchronisation active - Temps réel !';
+                    indicator.style.color = '#2e7d32';
+                    break;
+                case 'offline':
+                    statusElement.textContent = '🔴 Mode local';
+                    statusElement.className = 'sync-status sync-offline';
+                    indicator.textContent = '📱 Mode local - Configurez Firebase pour sync';
+                    indicator.style.color = '#d32f2f';
+                    break;
+                case 'connecting':
+                    statusElement.textContent = '🟡 Connexion...';
+                    statusElement.className = 'sync-status sync-connecting';
+                    indicator.textContent = '🔄 Connexion à Firebase...';
+                    indicator.style.color = '#f57c00';
+                    break;
+            }
+        }
+
+        // Mise à jour URL
+        function updateUrl() {
+            const url = new URL(window.location);
+            url.searchParams.set('id', challengeId);
+            window.history.replaceState({}, '', url.toString());
+            updateShareLink();
+        }
+
+        // Mise à jour lien partage
+        function updateShareLink() {
+            const currentUrl = window.location.href;
+            document.getElementById('shareLink').textContent = currentUrl;
+        }
+
+        // Boutons +/- pour mobile
+        function changeValue(inputId, delta) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const min = parseFloat(input.min) || 0;
+            const max = parseFloat(input.max) || 100;
+            const step = parseFloat(input.step) || 1;
+            
+            let newValue = currentValue + delta;
+            newValue = Math.max(min, Math.min(max, newValue));
+            
+            // Arrondir selon le step
+            if (step === 0.5) {
+                newValue = Math.round(newValue * 2) / 2;
+            } else {
+                newValue = Math.round(newValue);
             }
             
-            updateDisplay();
-            updateQuote();
-            updateShareLink();
-            updateSyncStatus();
+            input.value = newValue;
         }
-        
-        // Sauvegarde
-        function saveToStorage() {
-            localStorage.setItem('coupleWellnessData_' + data.challengeId, JSON.stringify(data));
-        }
-        
-        // Calcul score - Harmonisé avec sommeil
+
+        // Calcul score
         function calculateScore(person, values) {
             let score = 10; // Base
             
-            // Pénalités (identiques pour tous les deux)
+            // Pénalités
             score -= values.alcohol * 3;
             score -= values.appetizer * 2;
             score -= values.sugar * 2;
             score -= values.dessert * 2;
             
-            // Bonus (identiques pour tous les deux)
+            // Bonus
             score += values.vegetables * 4;
             score += values.sport * 6;
             if (values.steps) score += Math.min(Math.floor(values.steps / 1000), 8);
             
-            // Bonus sommeil (très important pour le bien-être)
-            if (values.sleep >= 7 && values.sleep <= 9) score += 8; // Sommeil optimal
-            else if (values.sleep >= 6 && values.sleep <= 10) score += 4; // Sommeil correct
-            else if (values.sleep > 0) score += 1; // Au moins tu as dormi
+            // Bonus sommeil
+            if (values.sleep >= 7 && values.sleep <= 9) score += 8;
+            else if (values.sleep >= 6 && values.sleep <= 10) score += 4;
+            else if (values.sleep > 0) score += 1;
             
             // Bonus qualité sommeil
-            if (values.sleepQuality >= 8) score += 6; // Excellent sommeil
-            else if (values.sleepQuality >= 6) score += 3; // Bon sommeil
-            else if (values.sleepQuality >= 4) score += 1; // Sommeil moyen
+            if (values.sleepQuality >= 8) score += 6;
+            else if (values.sleepQuality >= 6) score += 3;
+            else if (values.sleepQuality >= 4) score += 1;
             
-            // Bonus spéciaux encourageants
-            if (values.vegetables >= 3) score += 5; // Bonus légumes
-            if (values.sport >= 1) score += 5; // Bonus mouvement
-            if (values.alcohol === 0 && values.sugar === 0 && values.dessert === 0) score += 10; // Bonus résistance totale
-            if (values.sleep >= 7 && values.sleepQuality >= 7) score += 5; // Bonus sommeil parfait
+            // Bonus spéciaux
+            if (values.vegetables >= 3) score += 5;
+            if (values.sport >= 1) score += 5;
+            if (values.alcohol === 0 && values.sugar === 0 && values.dessert === 0) score += 10;
+            if (values.sleep >= 7 && values.sleepQuality >= 7) score += 5;
             
-            return Math.max(5, score); // Score minimum généreux
+            return Math.max(5, score);
         }
-        
+
         // Sauvegarde données quotidiennes
         function saveData(person) {
             const weight = parseFloat(document.getElementById(`weight${person}`).value);
@@ -722,6 +905,11 @@
                 showNotification('Merci de saisir un poids valide ! 💗');
                 return;
             }
+
+            // Désactiver bouton pendant sauvegarde
+            const saveBtn = document.getElementById(`saveBtn${person}`);
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Sauvegarde...';
             
             if (!data[`person${person}`].startWeight) {
                 data[`person${person}`].startWeight = weight;
@@ -729,7 +917,7 @@
             
             data[`person${person}`].currentWeight = weight;
             
-            // Récupérer valeurs - IDENTIQUES pour tous les deux + SOMMEIL
+            // Récupérer valeurs
             let values = {};
             if (person === 1) {
                 values = {
@@ -787,36 +975,43 @@
             // Recalculer score total
             data[`person${person}`].totalScore = data[`person${person}`].history.reduce((sum, h) => sum + h.score, 0);
             
-            // Mise à jour timestamp
-            data.lastSync = Date.now();
-            
             // Sauvegarder
-            saveToStorage();
-            updateUrl();
+            if (isFirebaseConfigured && db) {
+                saveToFirebase();
+            } else {
+                saveToLocalStorage();
+                updateUrl(); // Mise à jour URL en mode local
+            }
+            
             updateDisplay();
             updateMilestones(person);
             
             // Messages encouragement
-            if (person === 2) {
-                if (dailyScore >= 20) {
-                    showNotification('🌟 Incroyable journée ! Tu rayonnes ! ✨');
-                } else if (dailyScore >= 15) {
-                    showNotification('💖 Belle journée ! Continue comme ça !');
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Sauvegarder';
+                
+                if (person === 2) {
+                    if (dailyScore >= 20) {
+                        showNotification('🌟 Incroyable journée ! Tu rayonnes ! ✨');
+                    } else if (dailyScore >= 15) {
+                        showNotification('💖 Belle journée ! Continue comme ça !');
+                    } else {
+                        showNotification('💕 Chaque effort compte ! Tu es formidable !');
+                    }
                 } else {
-                    showNotification('💕 Chaque effort compte ! Tu es formidable !');
+                    if (dailyScore >= 20) {
+                        showNotification('💪 Excellent travail ! Tu assures !');
+                    } else {
+                        showNotification('👍 Bien joué ! Continue sur cette lancée !');
+                    }
                 }
-            } else {
-                if (dailyScore >= 20) {
-                    showNotification('💪 Excellent travail ! Tu assures !');
-                } else {
-                    showNotification('👍 Bien joué ! Continue sur cette lancée !');
-                }
-            }
-            
-            resetForm(person);
+                
+                resetForm(person);
+            }, 1000);
         }
-        
-        // Reset formulaire - IDENTIQUE pour tous les deux + sommeil
+
+        // Reset formulaire
         function resetForm(person) {
             document.getElementById(`weight${person}`).value = '';
             document.getElementById(`waist${person}`).value = '';
@@ -825,7 +1020,7 @@
             document.getElementById(`steps${person}`).value = '';
             document.getElementById(`comment${person}`).value = '';
             
-            // Reset des catégories identiques
+            // Reset des catégories
             document.getElementById(`alcohol${person}`).value = '0';
             document.getElementById(`appetizer${person}`).value = '0';
             document.getElementById(`sugar${person}`).value = '0';
@@ -835,7 +1030,7 @@
             document.getElementById(`sleep${person}`).value = '0';
             document.getElementById(`sleepQuality${person}`).value = '5';
         }
-        
+
         // Mise à jour affichage
         function updateDisplay() {
             for (let i = 1; i <= 2; i++) {
@@ -848,22 +1043,19 @@
                 document.getElementById(`weightLoss${i}`).textContent = weightLoss.toFixed(1);
                 document.getElementById(`progress${i}`).style.width = progress + '%';
                 
-                // Historique COMPLET avec catégories identiques + sommeil
+                // Historique
                 const historyDiv = document.getElementById(`history${i}`);
                 historyDiv.innerHTML = person.history.slice().reverse().map(h => {
                     const date = new Date(h.date).toLocaleDateString('fr-FR');
                     
-                    // Affichage identique pour tous les deux + sommeil
                     const dataDetails = `🍻 ${h.values.alcohol || 0} alcool | 🥨 ${h.values.appetizer || 0} apéritif | 🍰 ${h.values.sugar || 0} sucre | 🍫 ${h.values.dessert || 0} dessert | 🥗 ${h.values.vegetables || 0} légumes | 🏃 ${h.values.sport || 0} sport | 😴 ${h.values.sleep || 0}h | 🌙 ${h.values.sleepQuality || 0}/10`;
                     
-                    // Mesures corporelles
                     let measurements = '';
                     if (h.values.waist) measurements += ` | 📏 Ventre: ${h.values.waist}cm`;
                     if (h.values.waistline) measurements += ` | Taille: ${h.values.waistline}cm`;
                     if (h.values.thigh) measurements += ` | Cuisse: ${h.values.thigh}cm`;
                     if (h.values.steps) measurements += ` | 👟 ${h.values.steps} pas`;
                     
-                    // Commentaire
                     let commentText = h.values.comment ? `<br><em style="color: #555; font-style: italic;">"${h.values.comment}"</em>` : '';
                     
                     return `<div class="history-item">
@@ -892,21 +1084,26 @@
             document.getElementById('loss2').textContent = loss2 + 'kg';
             document.getElementById('bestScore').textContent = bestScore;
         }
-        
-        // Prise de photo (simulation)
+
+        // Prise de photo
         function takePhoto(person) {
             const today = new Date();
             const lastPhotoDate = data[`person${person}`].lastPhoto;
             
-            // Vérifier si c'est un lundi (1 = lundi en JavaScript)
             const isMonday = today.getDay() === 1;
             
             if (!lastPhotoDate || (today - new Date(lastPhotoDate)) >= 7 * 24 * 60 * 60 * 1000) {
                 if (isMonday) {
                     data[`person${person}`].lastPhoto = today.toISOString().split('T')[0];
                     data.lastSync = Date.now();
-                    saveToStorage();
-                    updateUrl();
+                    
+                    if (isFirebaseConfigured && db) {
+                        saveToFirebase();
+                    } else {
+                        saveToLocalStorage();
+                        updateUrl();
+                    }
+                    
                     showNotification('📸 Photo du lundi prise ! Tu progresses tellement bien ! ✨');
                 } else {
                     showNotification('📅 Les photos se prennent le lundi matin ! Revenez lundi ! 😊');
@@ -918,7 +1115,7 @@
                 showNotification(`📅 Prochaine photo lundi ! Plus que ${daysUntilNext} jour(s) !`);
             }
         }
-        
+
         // Jalons
         function updateMilestones(person) {
             const personData = data[`person${person}`];
@@ -938,28 +1135,14 @@
                 }
             });
         }
-        
+
         // Citation quotidienne
         function updateQuote() {
             const today = new Date();
             const quoteIndex = today.getDate() % quotes.length;
             document.getElementById('quote').textContent = quotes[quoteIndex];
         }
-        
-        // Statut synchronisation
-        function updateSyncStatus() {
-            const statusElement = document.getElementById('syncStatus');
-            statusElement.textContent = '🟢 Synchronisé';
-            statusElement.className = 'sync-status sync-online';
-        }
-        
-        // Synchronisation périodique
-        function startSyncCheck() {
-            syncInterval = setInterval(() => {
-                loadFromUrl();
-            }, 10000); // Vérifier toutes les 10 secondes
-        }
-        
+
         // Copier lien
         function copyLink() {
             const shareLink = document.getElementById('shareLink').textContent;
@@ -978,7 +1161,7 @@
                 showNotification('🔗 Lien copié !');
             }
         }
-        
+
         // Export données
         function exportData() {
             const exportData = {
@@ -996,70 +1179,39 @@
             
             showNotification('📤 Données exportées !');
         }
-        
-        // Import données
-        function importData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
+
+        // Nouveau défi
+        function resetChallenge() {
+            if (confirm('Êtes-vous sûr de vouloir créer un nouveau défi ? Toutes les données actuelles seront perdues.')) {
+                // Nettoyer ancien listener
+                if (unsubscribe) {
+                    unsubscribe();
+                }
                 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        
-                        if (importedData.data && importedData.data.person1 && importedData.data.person2) {
-                            // Fusionner les données
-                            data.person1.history = [...data.person1.history, ...importedData.data.person1.history];
-                            data.person2.history = [...data.person2.history, ...importedData.data.person2.history];
-                            
-                            // Supprimer doublons par date
-                            data.person1.history = data.person1.history.filter((item, index, self) =>
-                                index === self.findIndex(t => t.date === item.date)
-                            );
-                            data.person2.history = data.person2.history.filter((item, index, self) =>
-                                index === self.findIndex(t => t.date === item.date)
-                            );
-                            
-                            // Trier par date
-                            data.person1.history.sort((a, b) => new Date(a.date) - new Date(b.date));
-                            data.person2.history.sort((a, b) => new Date(a.date) - new Date(b.date));
-                            
-                            // Recalculer scores
-                            data.person1.totalScore = data.person1.history.reduce((sum, h) => sum + h.score, 0);
-                            data.person2.totalScore = data.person2.history.reduce((sum, h) => sum + h.score, 0);
-                            
-                            // Mettre à jour poids actuels
-                            if (data.person1.history.length > 0) {
-                                data.person1.currentWeight = data.person1.history[data.person1.history.length - 1].weight;
-                            }
-                            if (data.person2.history.length > 0) {
-                                data.person2.currentWeight = data.person2.history[data.person2.history.length - 1].weight;
-                            }
-                            
-                            data.lastSync = Date.now();
-                            saveToStorage();
-                            updateUrl();
-                            updateDisplay();
-                            
-                            showNotification('📥 Données importées et fusionnées !');
-                        } else {
-                            showNotification('❌ Fichier non valide !');
-                        }
-                    } catch (error) {
-                        showNotification('❌ Erreur lors de l\'import !');
-                    }
+                // Nouveau challenge
+                challengeId = generateChallengeId();
+                data = {
+                    person1: { name: "Mon Amour 🧩🫶", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+                    person2: { name: "Mi Amor 🫶🧩", startWeight: null, currentWeight: null, history: [], totalScore: 0 },
+                    startDate: new Date().toISOString().split('T')[0],
+                    lastSync: Date.now(),
+                    challengeId: challengeId
                 };
-                reader.readAsText(file);
-            };
-            
-            input.click();
+                
+                updateUrl();
+                
+                if (isFirebaseConfigured && db) {
+                    saveToFirebase();
+                    setupRealtimeListener();
+                } else {
+                    saveToLocalStorage();
+                }
+                
+                updateDisplay();
+                showNotification('🆕 Nouveau défi créé ! Partagez le nouveau lien !');
+            }
         }
-        
+
         // Notification
         function showNotification(message) {
             const notification = document.getElementById('notification');
@@ -1070,24 +1222,151 @@
                 notification.style.display = 'none';
             }, 4000);
         }
-        
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            startSyncCheck();
+            initFirebase();
         });
-        
+
         // Nettoyage
         window.addEventListener('beforeunload', function() {
-            if (syncInterval) {
-                clearInterval(syncInterval);
+            if (unsubscribe) {
+                unsubscribe();
             }
-        });
-        
-        // Détection changements URL
-        window.addEventListener('popstate', function() {
-            loadFromUrl();
         });
     </script>
 </body>
-</html>
+</html>255,0.6); padding: 10px; border-radius: 8px; font-size: 0.75em; color: #666; margin-bottom: 15px;">
+                    <strong>📖 Guide :</strong><br>
+                    <strong>Verres:</strong> nombre réel • <strong>Intensité:</strong> 0=rien, 3=normal, 6=beaucoup, 10=énorme<br>
+                    <strong>Portions:</strong> 1=assiette légumes • <strong>Sport:</strong> 0=canapé, 5=marche, 10=intense<br>
+                    <strong>Sommeil:</strong> heures réelles • <strong>Qualité:</strong> 1=horrible, 5=correct, 8=très bien, 10=parfait
+                </div>
+                
+                <div class="input-group">
+                    <label>👟 Mes pas aujourd'hui</label>
+                    <input type="number" id="steps1" placeholder="Ex: 8500">
+                </div>
+                
+                <div class="input-group">
+                    <label>💭 Comment je me sens</label>
+                    <textarea id="comment1" rows="2" placeholder="Ma journée..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="saveData(1)" id="saveBtn1">💾 Sauvegarder</button>
+                
+                <div class="history" id="history1"></div>
+            </div>
+            
+            <!-- Section Mi Amor -->
+            <div class="person-section">
+                <h2 class="person-title">Mi Amor 🫶🧩</h2>
+                
+                <div class="score-display">
+                    <div class="score-number" id="score2">0</div>
+                    <div>points bien-être</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress2" style="width: 0%"></div>
+                    </div>
+                    <div>Perte: <span id="weightLoss2">0</span> kg / 10 kg</div>
+                </div>
+                
+                <div class="milestone" id="milestone2_25">🎯 Objectif 2.5kg</div>
+                <div class="milestone" id="milestone2_50">🎯 Objectif 5kg</div>
+                <div class="milestone" id="milestone2_75">🎯 Objectif 7.5kg</div>
+                <div class="milestone" id="milestone2_100">🏆 Objectif 10kg</div>
+                
+                <div class="input-group">
+                    <label>💗 Mon poids aujourd'hui (kg)</label>
+                    <input type="number" id="weight2" step="0.1" placeholder="Ex: 65.2">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de ventre (cm) - optionnel</label>
+                    <input type="number" id="waist2" step="0.1" placeholder="Ex: 75">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de taille (cm) - optionnel</label>
+                    <input type="number" id="waistline2" step="0.1" placeholder="Ex: 70">
+                </div>
+                
+                <div class="input-group">
+                    <label>📏 Tour de cuisse (cm) - optionnel</label>
+                    <input type="number" id="thigh2" step="0.1" placeholder="Ex: 60">
+                </div>
+                
+                <div class="input-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; text-align: center; border: 2px dashed #ff6b9d;">
+                    <label>📸 Photo bien-être (tous les lundis matins)</label>
+                    <small>Photo entière face et côté - Pour voir tes progrès et te sentir fière !</small><br>
+                    <button type="button" onclick="takePhoto(2)" style="background: #4ecdc4; color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px;">Prendre une photo</button>
+                </div>
+                
+                <div class="categories">
+                    <div class="category">
+                        🍻 Alcool (verres)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('alcohol2', -1)">-</button>
+                            <input type="number" id="alcohol2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('alcohol2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥨 Apéritif (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('appetizer2', -1)">-</button>
+                            <input type="number" id="appetizer2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('appetizer2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍰 Sucre (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sugar2', -1)">-</button>
+                            <input type="number" id="sugar2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sugar2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🍫 Dessert (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('dessert2', -1)">-</button>
+                            <input type="number" id="dessert2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('dessert2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🥗 Légumes (portions)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('vegetables2', -1)">-</button>
+                            <input type="number" id="vegetables2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('vegetables2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🏃 Sport (intensité)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sport2', -1)">-</button>
+                            <input type="number" id="sport2" min="0" max="10" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sport2', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        😴 Sommeil (heures)
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleep2', -0.5)">-</button>
+                            <input type="number" id="sleep2" min="0" max="15" step="0.5" value="0" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleep2', 0.5)">+</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        🌙 Qualité sommeil
+                        <div class="counter-buttons">
+                            <button class="counter-btn" onclick="changeValue('sleepQuality2', -1)">-</button>
+                            <input type="number" id="sleepQuality2" min="1" max="10" value="5" readonly>
+                            <button class="counter-btn" onclick="changeValue('sleepQuality2', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,
