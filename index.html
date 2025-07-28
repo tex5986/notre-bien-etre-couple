@@ -91,7 +91,77 @@
             margin: 10px 0;
         }
         
-        .setup-warning {
+        .quick-nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .puzzle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .nav-btn {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: none;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .nav-btn-1 {
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #4a4a4a;
+            clip-path: polygon(0% 0%, 85% 0%, 100% 35%, 85% 50%, 100% 65%, 85% 100%, 0% 100%);
+        }
+        
+        .nav-btn-2 {
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #4a4a4a;
+            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 15% 65%, 0% 50%, 15% 35%);
+        }
+        
+        .nav-btn-history {
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            clip-path: polygon(0% 0%, 85% 0%, 100% 35%, 85% 50%, 100% 65%, 85% 100%, 0% 100%);
+        }
+        
+        .nav-btn-tech {
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #4a4a4a;
+            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 15% 65%, 0% 50%, 15% 35%);
+        }
+        
+        .nav-btn:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
             background: rgba(255, 193, 7, 0.1);
             border: 2px solid #ffc107;
             padding: 15px;
@@ -366,7 +436,38 @@
             text-align: center;
         }
         
-        @media (max-width: 768px) {
+            @media (max-width: 768px) {
+                .quick-nav {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(255,255,255,0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 10px;
+                    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    margin: 0;
+                }
+                
+                .nav-btn {
+                    padding: 10px 15px;
+                    font-size: 12px;
+                    flex: 1;
+                    min-width: 70px;
+                    -webkit-tap-highlight-color: transparent;
+                }
+                
+                /* Ajouter padding en bas pour compenser la nav fixe */
+                body {
+                    padding-bottom: 80px;
+                }
+                
+                /* Fix pour iOS Safari */
+                .quick-nav {
+                    padding-bottom: env(safe-area-inset-bottom, 10px);
+                }
+            }
             .main-content {
                 grid-template-columns: 1fr;
             }
@@ -432,16 +533,18 @@
 
             <!-- Navigation rapide -->
             <div class="quick-nav">
-                <button onclick="scrollToSection('section1')" class="nav-btn nav-btn-1">🧩 Mon Amour</button>
-                <button onclick="scrollToSection('section2')" class="nav-btn nav-btn-2">🫶 Mi Amor</button>
-                <button onclick="showFullHistory()" class="nav-btn nav-btn-history">📊 Historique</button>
-                <button onclick="scrollToSection('technical')" class="nav-btn nav-btn-tech">⚙️ Outils</button>
+                <div class="puzzle-container">
+                    <button onclick="scrollToSection('person1')" class="nav-btn nav-btn-1">🧩<br>Mon<br>Amour</button>
+                    <button onclick="scrollToSection('person2')" class="nav-btn nav-btn-2">🫶<br>Mi<br>Amor</button>
+                    <button onclick="showFullHistory()" class="nav-btn nav-btn-history">📊<br>Historique</button>
+                    <button onclick="scrollToSection('technical')" class="nav-btn nav-btn-tech">⚙️<br>Outils</button>
+                </div>
             </div>
         </div>
         
         <div class="main-content">
             <!-- Section Mon Amour -->
-            <div class="person-section">
+            <div class="person-section" id="person1">
                 <h2 class="person-title">Mon Amour 🧩🫶</h2>
                 
                 <div class="score-display">
@@ -578,8 +681,9 @@
     </div>
     
     <!-- Section technique en bas -->
-    <div class="container" style="margin-top: 20px;">
+    <div class="container" style="margin-top: 20px;" id="technical">
         <div class="sync-info">
+            <h3 style="text-align: center; color: #667eea; margin-bottom: 15px;">🔧 Outils et Synchronisation</h3>
             <div class="sync-status" id="syncStatus">🔄 Connexion Firebase...</div>
             
             <!-- Configuration Firebase à personnaliser -->
@@ -1101,7 +1205,41 @@
             document.getElementById('bestScore').textContent = bestScore;
         }
 
-        // Sauvegarde lien photo
+        // Navigation rapide
+        function scrollToSection(sectionId) {
+            console.log('Tentative de scroll vers:', sectionId);
+            const element = document.getElementById(sectionId);
+            console.log('Élément trouvé:', element);
+            
+            if (element) {
+                // Méthode alternative pour iOS
+                const yOffset = -20; // Petit décalage pour éviter que le titre soit collé en haut
+                const yPosition = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                
+                window.scrollTo({
+                    top: yPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Fallback pour les anciens navigateurs
+                setTimeout(() => {
+                    element.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            } else {
+                console.error('Élément non trouvé:', sectionId);
+                // En cas d'échec, essayer de scroller manuellement
+                if (sectionId === 'person1') {
+                    window.scrollTo({ top: 400, behavior: 'smooth' });
+                } else if (sectionId === 'person2') {
+                    window.scrollTo({ top: 800, behavior: 'smooth' });
+                } else if (sectionId === 'technical') {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }
+            }
+        }
         function savePhotoLink(person) {
             const photoLinkInput = document.getElementById(`photoLink${person}`);
             const photoLink = photoLinkInput.value.trim();
@@ -1435,7 +1573,7 @@
             </div>
             
             <!-- Section Mi Amor -->
-            <div class="person-section">
+            <div class="person-section" id="person2">
                 <h2 class="person-title">Mi Amor 🫶🧩</h2>
                 
                 <div class="score-display">
